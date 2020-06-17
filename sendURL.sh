@@ -37,25 +37,6 @@ if [[ -z "$THEURL" ]]
     echo "<icon>icon.png</icon>"
     echo "</item>"
 
-# special case for Adium
-elif [[ $QUERY* == "adium"* ]] && [[ $(ps ax | grep -c Adium) -ge 2 ]]
-    then
-    # List active Adium contacts
-    USERS=$(osascript -e "tell application \"Adium\" to return display name of every contact whose status type is not offline" | sed -e 's/, /,/g' |  tr " " "_" | tr "," "\n" | sort -u )
-
-    for USER in $USERS
-    do
-        USERNAME=$(echo $USER | tr '_' ' ' | sed 's/^\ //')
-        if [[ "adium $USERNAME" == $QUERY* ]]
-            then
-            echo "<item arg=\"adium$USERNAME\" autocomplete=\"Adium $USERNAME\">"  
-            echo "<title>Send URL to $USERNAME</title>"
-            echo "<subtitle>Send URL in a chat message</subtitle>"
-            echo "<icon>Adium.png</icon>"
-            echo "</item>"
-        fi
-    done
-
 # List all available applications
 else
     # Copy to clipboard item, on top when no $query
@@ -83,16 +64,15 @@ else
             <icon type=\"fileicon\">$APP_PATH</icon>
             </item>"
     done
- 
-    # adium item
-    if [[ "adium" == $QUERY* ]] && [[ $(ps ax | grep -c Adium) -ge 2 ]]
+
+    if [[ "firefox" == $QUERY* ]]
         then
-        echo "<item autocomplete=\"Adium \" valid=\"no\" >"
-        echo "<title>Send URL to Adium</title>"
-        echo "<subtitle>Send URL to a Contact</subtitle>"
-        echo "<icon>Adium.png</icon>"
+        echo "<item arg=\"firefox\" autocomplete=\"Firefox\">"
+        echo "<title>Send URL to Firefox</title>"
+        echo "<subtitle>$THEURL</subtitle>"
+        echo "<icon>icon.png</icon>"
         echo "</item>"
-    fi    
+    fi
 
     # compose gmail message with url
     if [[ "gmail" == $QUERY* ]]
@@ -104,27 +84,6 @@ else
         echo "</item>"
     fi
     
-
-    # Instapaper Mobilizer
-    if [[ " instapaper mobilizer" == *\ $QUERY* ]] && [[ $URLPROTOCOL == http* ]]
-        then
-        echo "<item arg=\"instapapermobilizer\" autocomplete=\"Mobilizer\">"
-        echo "<title>Send URL to Instapaper Mobilizer</title>"
-        echo "<subtitle>Opens Instapaper Mobilizer in the default browser</subtitle>"
-        echo "<icon>instapaper.png</icon>"
-        echo "</item>"
-    fi
-
-    # downforeveryoneorjustme item
-    if [[ " down for everyone or just me" == *\ $QUERY* ]]
-        then
-        echo "<item arg=\"downforeveryoneorjustme\" autocomplete=\"Down For Everyone?\">"
-        echo "<title>Down For Everyone Or Just Me?</title>"
-        echo "<subtitle>http://www.downforeveryoneorjustme.com</subtitle>"
-        echo "<icon>icon.png</icon>"
-        echo "</item>"
-    fi
-
     # Copy to clipboard as html link item
     if [[ " copy as html link" == *\ $QUERY* ]]
         then
